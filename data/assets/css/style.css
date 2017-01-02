@@ -1,0 +1,24 @@
+.manpage {
+  font-family: monospace;
+  font-size: 14px;
+  line-height: 1.42857142857143;
+  max-width: 800px;
+  text-align: justify; }
+  .manpage h1 {
+    font-size: 20px;
+    line-height: 2; }
+  .manpage h2 {
+    font-size: 16px;
+    line-height: 1.25;
+    margin-top: 20px;
+    margin-bottom: 0;
+    text-transform: uppercase; }
+  .manpage a, .manpage a:link, .manpage a:hover {
+    color: #0000ff;
+    font-weight: bold; }
+  .manpage section > p, .manpage section > ul, .manpage section > ol, .manpage section > code, .manpage section > pre {
+    margin-top: 0;
+    margin-left: 50px; }
+  .manpage section > ul, .manpage section > ol {
+    padding: 0;
+    list-style-type: none; }

@@ -1,0 +1,50 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{.Name}}(1)</title>
+    <link rel="stylesheet" type="text/css" href="/_assets/css/style.css">
+</head>
+<body>
+    <main class="manpage">
+        <h1>{{.Name}}(1)</h1>
+
+        <section id="name">
+            <h2>Name</h2>
+
+            <p>{{.Name}} - {{.ShortDescription}}</p>
+        </section>
+
+        <section id="description">
+            <h2>Description</h2>
+
+            <p>{{.Description}}</p>
+        </section>
+
+        <section id="endpoints">
+            <h2>Endpoints</h2>
+
+            <ul>
+                <li><a href="/">/</a> This page</li>
+                {{range .Endpoints}}
+                    {{if eq .Method "GET"}}
+                        <li><a href="{{.PrepareWithDefaults}}">{{.Path}}</a> {{.Description}}</li>
+                    {{else}}
+                        <li><strong>{{.Path}}</strong> [{{.Method}}] {{.Description}}</li>
+                    {{end}}
+                {{end}}
+
+                {{range .Groups}}
+                    <li><h2>{{.Name}}</h2></li>
+                    {{range .Endpoints}}
+                        {{if eq .Method "GET"}}
+                            <li><a href="{{.PrepareWithDefaults}}">{{.Path}}</a> {{.Description}}</li>
+                        {{else}}
+                            <li><strong>{{.Path}}</strong> [{{.Method}}] {{.Description}}</li>
+                        {{end}}
+                    {{end}}
+                {{end}}
+            </ul>
+        </section>
+    </main>
+</body>
+</html>
