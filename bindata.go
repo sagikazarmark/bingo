@@ -4,7 +4,7 @@
 // data/templates/index.html
 // DO NOT EDIT!
 
-package main
+package bingo
 
 import (
 	"bytes"

@@ -1,6 +1,6 @@
-package main
+package bingo
 
-//go:generate go-bindata data/...
+//go:generate go-bindata -pkg bingo data/...
 
 import (
 	"errors"
