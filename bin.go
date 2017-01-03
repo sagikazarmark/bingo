@@ -3,27 +3,13 @@ package main
 //go:generate go-bindata data/...
 
 import (
+	"errors"
 	"html/template"
 	"net/http"
-	"strings"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/elazarl/go-bindata-assetfs"
 )
-
-type Endpoint struct {
-	Method string
-	Path string
-	Handler httprouter.Handle
-	Description string
-	Defaults map[string]string
-}
-
-type Group struct {
-	Name string
-	Description string
-	Endpoints []*Endpoint
-}
 
 type Bin struct {
 	Name string
@@ -35,16 +21,20 @@ type Bin struct {
 }
 
 // Creates a new Bin
-func New(name string, shortDescription string, description string) (*Bin) {
+func New(name string, shortDescription string, description string) (*Bin, error) {
+	if name == "" {
+		return nil, errors.New("Name must not be empty")
+	}
+
 	return &Bin {
 		Name: name,
 		ShortDescription: shortDescription,
 		Description: description,
-	}
+	}, nil
 }
 
 // Creates the HTTP Handler
-func CreateHandler(b *Bin) (http.Handler) {
+func NewHandler(b *Bin) (http.Handler) {
 	router := httprouter.New()
 
 	// Add global endpoints
@@ -87,15 +77,4 @@ func (b *Bin) Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params)
 	w.WriteHeader(200)
 
 	_ = t.Execute(w, b)
-}
-
-// Prepare the URL with sane defaults
-func (e *Endpoint) PrepareWithDefaults() string {
-	path := e.Path
-
-	for k, v := range e.Defaults {
-		path = strings.Replace(path, ":" + k, v, -1)
-	}
-
-	return path
 }
