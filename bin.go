@@ -7,17 +7,17 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/julienschmidt/httprouter"
 	"github.com/elazarl/go-bindata-assetfs"
+	"github.com/julienschmidt/httprouter"
 )
 
 type Bin struct {
-	Name string
+	Name             string
 	ShortDescription string
-	Description string
-	Endpoints []*Endpoint
-	Groups []*Group
-	IndexTemplate string
+	Description      string
+	Endpoints        []*Endpoint
+	Groups           []*Group
+	IndexTemplate    string
 }
 
 // Creates a new Bin
@@ -26,15 +26,15 @@ func New(name string, shortDescription string, description string) (*Bin, error)
 		return nil, errors.New("Name must not be empty")
 	}
 
-	return &Bin {
-		Name: name,
+	return &Bin{
+		Name:             name,
 		ShortDescription: shortDescription,
-		Description: description,
+		Description:      description,
 	}, nil
 }
 
 // Creates the HTTP Handler
-func NewHandler(b *Bin) (http.Handler) {
+func NewHandler(b *Bin) http.Handler {
 	router := httprouter.New()
 
 	// Add global endpoints
@@ -57,7 +57,7 @@ func NewHandler(b *Bin) (http.Handler) {
 	assets := &assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, AssetInfo: AssetInfo, Prefix: "data/assets"}
 	router.Handler("GET", "/_assets/*file", http.StripPrefix("/_assets/", http.FileServer(assets)))
 
-	return router;
+	return router
 }
 
 // The index page listing all endpoints

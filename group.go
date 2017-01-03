@@ -4,9 +4,9 @@ import "errors"
 
 // Holds a list of endpoints
 type Group struct {
-	Name string
+	Name        string
 	Description string
-	Endpoints []*Endpoint
+	Endpoints   []*Endpoint
 }
 
 func NewGroup(name string, description string) (*Group, error) {
@@ -14,8 +14,8 @@ func NewGroup(name string, description string) (*Group, error) {
 		return nil, errors.New("Name must not be empty")
 	}
 
-	return &Group {
-		Name: name,
+	return &Group{
+		Name:        name,
 		Description: description,
 	}, nil
 }

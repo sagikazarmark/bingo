@@ -5,8 +5,8 @@ import (
 
 	"net/http"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/julienschmidt/httprouter"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_EndpointConstructor(t *testing.T) {

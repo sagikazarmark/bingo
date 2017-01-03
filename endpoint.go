@@ -11,12 +11,12 @@ import (
 type Parameters map[string]string
 
 type Endpoint struct {
-	Method string
-	Path string
-	Handler httprouter.Handle
+	Method      string
+	Path        string
+	Handler     httprouter.Handle
 	Description string
-	Parameters Parameters
-	Query url.Values
+	Parameters  Parameters
+	Query       url.Values
 }
 
 func NewEndpoint(method string, path string, handler httprouter.Handle) (*Endpoint, error) {
@@ -32,12 +32,12 @@ func NewEndpoint(method string, path string, handler httprouter.Handle) (*Endpoi
 		return nil, errors.New("Handler must not be empty")
 	}
 
-	return &Endpoint {
-		Method: method,
-		Path: path,
-		Handler: handler,
+	return &Endpoint{
+		Method:     method,
+		Path:       path,
+		Handler:    handler,
 		Parameters: make(Parameters),
-		Query: make(url.Values),
+		Query:      make(url.Values),
 	}, nil
 }
 
@@ -46,7 +46,7 @@ func (e *Endpoint) Url() string {
 	path := e.Path
 
 	for k, v := range e.Parameters {
-		path = strings.Replace(path, ":" + k, v, -1)
+		path = strings.Replace(path, ":"+k, v, -1)
 	}
 
 	if len(e.Query) > 0 {
@@ -56,7 +56,6 @@ func (e *Endpoint) Url() string {
 	return path
 }
 
-func(p Parameters) Set(key string, value string) {
+func (p Parameters) Set(key string, value string) {
 	p[key] = value
 }
-
