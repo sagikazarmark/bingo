@@ -13,7 +13,7 @@ generate:
 	@$(GO) generate
 
 # build the project and generate latest code
-build: generate
+build:
 	@$(GO) build
 
 # check go sources
