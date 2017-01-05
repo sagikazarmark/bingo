@@ -7,7 +7,6 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -33,33 +32,6 @@ func New(name string, shortDescription string, description string) (*Bin, error)
 	}, nil
 }
 
-// Creates the HTTP Handler
-func NewHandler(b *Bin) http.Handler {
-	router := httprouter.New()
-
-	// Add global endpoints
-	for _, endpoint := range b.Endpoints {
-		router.Handle(endpoint.Method, endpoint.Path, endpoint.Handler)
-	}
-
-	// Add groupped endpoints
-	for _, group := range b.Groups {
-		for _, endpoint := range group.Endpoints {
-			router.Handle(endpoint.Method, endpoint.Path, endpoint.Handler)
-		}
-	}
-
-	// Add index page
-	router.GET("/", b.Index)
-
-	// Add assets necessary for the index page
-	// Note: this might conflict with any endpoint starting with /_assets
-	assets := &assetfs.AssetFS{Asset: Asset, AssetDir: AssetDir, AssetInfo: AssetInfo, Prefix: "data/assets"}
-	router.Handler("GET", "/_assets/*file", http.StripPrefix("/_assets/", http.FileServer(assets)))
-
-	return router
-}
-
 // The index page listing all endpoints
 func (b *Bin) Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	if b.IndexTemplate == "" {
@@ -77,4 +49,14 @@ func (b *Bin) Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params)
 	w.WriteHeader(200)
 
 	_ = t.Execute(w, b)
+}
+
+// Idiomatic way of adding an Endpoint without initializing the underlying slice
+func (b *Bin) AddEndpoint(endpoint *Endpoint) {
+	b.Endpoints = append(b.Endpoints, endpoint)
+}
+
+// Idiomatic way of adding a Group without initializing the underlying slice
+func (b *Bin) AddGroup(group *Group) {
+	b.Groups = append(b.Groups, group)
 }
