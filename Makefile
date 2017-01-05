@@ -6,7 +6,7 @@ GO_SOURCE_FILES = $(shell find . -type f -name "*.go" -not -name "bindata.go" -n
 
 # install dependencies
 install:
-	$(GLIDE) install
+	@$(GLIDE) install
 
 # generate resource files
 generate:
