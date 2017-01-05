@@ -27,9 +27,9 @@
                 <li><a href="/">/</a> This page</li>
                 {{range .Endpoints}}
                     {{if eq .Method "GET"}}
-                        <li><a href="{{.Url}}">{{.Path}}</a> {{.Description}}</li>
+                        <li><a href="{{.BuildUri}}">{{.Uri.RequestURI}}</a> {{.Description}}</li>
                     {{else}}
-                        <li><strong>{{.Path}}</strong> [{{.Method}}] {{.Description}}</li>
+                        <li><strong>{{.Uri.RequestURI}}</strong> [{{.Method}}] {{.Description}}</li>
                     {{end}}
                 {{end}}
 
@@ -37,9 +37,9 @@
                     <li><h2>{{.Name}}</h2></li>
                     {{range .Endpoints}}
                         {{if eq .Method "GET"}}
-                            <li><a href="{{.Url}}">{{.Path}}</a> {{.Description}}</li>
+                            <li><a href="{{.BuildUri}}">{{.Uri.RequestURI}}</a> {{.Description}}</li>
                         {{else}}
-                            <li><strong>{{.Path}}</strong> [{{.Method}}] {{.Description}}</li>
+                            <li><strong>{{.Uri.RequestURI}}</strong> [{{.Method}}] {{.Description}}</li>
                         {{end}}
                     {{end}}
                 {{end}}
