@@ -41,8 +41,8 @@ generate:
 
 # Check that all source files follow the Coding Style
 check:
-	@$(GOFMT) -l ${GO_SOURCE_FILES} | read && echo "Code differs from gofmt's style" 1>&2 && exit 1 || true
-	@$(GO) vet ${GO_SOURCE_FILES}
+	@$(GOFMT) -l $(GO_SOURCE_FILES) | read && echo "Code differs from gofmt's style" 1>&2 && exit 1 || true
+	@$(GO) vet $(GO_PACKAGES)
 
 # Fix Coding Standard violations
 fix:
