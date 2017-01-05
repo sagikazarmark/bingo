@@ -1,5 +1,5 @@
 GO?=go
-GOFMT?=go
+GOFMT?=gofmt
 GLIDE?=glide
 BINDATA?=go-bindata
 GO_SOURCE_FILES = $(shell find . -type f -name "*.go" -not -name "bindata.go" -not -path "./vendor/*")
