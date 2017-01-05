@@ -2,6 +2,7 @@ GO?=go
 GOFMT?=gofmt
 GLIDE:=$(shell if which glide > /dev/null 2>&1; then echo "glide"; fi)
 BINDATA?=go-bindata
+GO_RUN_FILES=$(shell find . -type f -name "*.go" -not -name "*_test.go" -not -path "./vendor/*")
 GO_SOURCE_FILES=$(shell find . -type f -name "*.go" -not -name "bindata.go" -not -path "./vendor/*")
 GO_PACKAGES=$(shell go list ./... | grep -v /vendor/)
 
@@ -23,9 +24,14 @@ else
 	@echo "Glide is necessary for installing project dependencies: http://glide.sh/ Run this command with FORCE=true to fall back to go get" 1>&2 && exit 1
 endif
 
-# Clean go environment
+# Clean Go environment
+# TODO: add BINARY support?
 clean:
 	@$(GO) clean
+
+# Run all sources if this is a console app
+run:
+	@$(GO) run $(GO_RUN_FILES)
 
 # Run tests
 test:
@@ -52,4 +58,4 @@ else
 	@$(GOFMT) -l -w $(GO_SOURCE_FILES)
 endif
 
-.PHONY: build install clean test generate check fix
+.PHONY: build install clean run test generate check fix
