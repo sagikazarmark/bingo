@@ -47,9 +47,9 @@ check:
 # Fix Coding Standard violations
 fix:
 ifeq ($(SIMPLYFY), true)
-	@$(GOFMT) -l -w -s ${GO_SOURCE_FILES}
+	@$(GOFMT) -l -w -s $(GO_SOURCE_FILES)
 else
-	@$(GOFMT) -l -w ${GO_SOURCE_FILES}
+	@$(GOFMT) -l -w $(GO_SOURCE_FILES)
 endif
 
 .PHONY: build install clean test generate check fix
