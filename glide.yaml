@@ -1,0 +1,10 @@
+package: github.com/sagikazarmark/bingo
+import:
+- package: github.com/elazarl/go-bindata-assetfs
+- package: github.com/julienschmidt/httprouter
+  version: ^1.1.0
+testImport:
+- package: github.com/stretchr/testify
+  version: ^1.1.4
+  subpackages:
+  - assert
