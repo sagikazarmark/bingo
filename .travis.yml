@@ -11,7 +11,7 @@ go:
     - tip
 
 before_install:
-    - mkdir -p $GOPATH/bin
-    - curl https://glide.sh/get | sh
+    - mkdir -p $HOME/bin
+    - curl -L https://git.io/vMZjG | sh -s $HOME/bin
 install: make install
 script: make VERBOSE=true test
