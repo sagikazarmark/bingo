@@ -1,61 +1,56 @@
-GO?=go
-GOFMT?=gofmt
-GLIDE:=$(shell if which glide > /dev/null 2>&1; then echo "glide"; fi)
-BINDATA?=go-bindata
-GO_RUN_FILES=$(shell find . -type f -name "*.go" -not -name "*_test.go" -not -path "./vendor/*")
-GO_SOURCE_FILES=$(shell find . -type f -name "*.go" -not -name "bindata.go" -not -path "./vendor/*")
-GO_PACKAGES=$(shell go list ./... | grep -v /vendor/)
+# A Self-Documenting Makefile: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 
-# Build the project, optionally in form of a binary
-build:
-ifdef BINARY
-	$(GO) build $(BUILDOPTS) -o $(BINARY)
-else
-	$(GO) install $(BUILDOPTS) .
-endif
+PACKAGE = $(shell go list .)
+VERSION ?= $(shell git rev-parse --abbrev-ref HEAD)
+COMMIT_HASH = $(shell git rev-parse --short HEAD 2>/dev/null)
+BUILD_DATE = $(shell date +%FT%T%z)
+LDFLAGS = -ldflags "-w -X ${PACKAGE}/cmd.Version=${VERSION} -X ${PACKAGE}/cmd.CommitHash=${COMMIT_HASH} -X ${PACKAGE}/cmd.BuildDate=${BUILD_DATE}"
+BINARY_NAME = $(shell go list . | cut -d '/' -f 3)
+GO_SOURCE_FILES = $(shell find . -type f -name "*.go" -not -name "bindata.go" -not -path "./vendor/*")
+GO_PACKAGES = $(shell go list ./... | grep -v /vendor/)
 
-# Install dependencies, optionally using go get
-install:
-ifdef GLIDE
-	@$(GLIDE) install
-else ifeq ($(FORCE), true)
-	$(GO) get
-else
-	@echo "Glide is necessary for installing project dependencies: http://glide.sh/ Run this command with FORCE=true to fall back to go get" 1>&2 && exit 1
-endif
+.PHONY: setup install clean run watch build check test watch-test fmt csfix envcheck help
+.DEFAULT_GOAL := help
 
-# Clean Go environment
-# TODO: add BINARY support?
-clean:
-	@$(GO) clean
+setup:: install ## Setup the project for development
 
-# Run all sources if this is a console app
-run:
-	@$(GO) run $(GO_RUN_FILES)
+install: ## Install dependencies
+	@glide install
 
-# Run tests
-test:
-ifeq ($(VERBOSE), true)
-	@$(GO) test -v $(GO_PACKAGES)
-else
-	@$(GO) test $(GO_PACKAGES)
-endif
+clean:: ## Clean the working area
+	rm -rf build/ vendor/
 
-# Generate necessary files
-generate:
-	@$(GO) generate
+run: build ## Build and execute a binary
+	${GODOTENV} build/${BINARY_NAME} ${ARGS}
 
-# Check that all source files follow the Coding Style
-check:
-	@$(GOFMT) -l $(GO_SOURCE_FILES) | read && echo "Code differs from gofmt's style" 1>&2 && exit 1 || true
-	@$(GO) vet $(GO_PACKAGES)
+watch: ## Watch for file changes and run the built binary
+	reflex -d none -r '\.go$$' -- $(MAKE) ARGS="${ARGS}" run
 
-# Fix Coding Standard violations
-fix:
-ifeq ($(SIMPLYFY), true)
-	@$(GOFMT) -l -w -s $(GO_SOURCE_FILES)
-else
-	@$(GOFMT) -l -w $(GO_SOURCE_FILES)
-endif
+build: ## Build a binary
+	CGO_ENABLED=0 go build ${LDFLAGS} -o build/${BINARY_NAME}
 
-.PHONY: build install clean run test generate check fix
+check:: test fmt ## Run tests and linters
+
+test: ## Run unit tests
+	@${GODOTENV} go test ${ARGS} ${GO_PACKAGES}
+
+watch-test: ## Watch for file changes and run tests
+	reflex -d none -r '\.go$$' -- $(MAKE) ARGS="${ARGS}" test
+
+fmt: ## Check that all source files follow the Coding Style
+	@gofmt -l ${GO_SOURCE_FILES} | read something && echo "Code differs from gofmt's style" 1>&2 && exit 1 || true
+
+csfix: ## Fix Coding Standard violations
+	@gofmt -l -w -s ${GO_SOURCE_FILES}
+
+envcheck:: ## Check environment for all the necessary requirements
+	$(call executable_check,Go,go)
+	$(call executable_check,Glide,glide)
+	$(call executable_check,Reflex,reflex)
+
+define executable_check
+    @printf "\033[36m%-30s\033[0m %s\n" "$(1)" `if which $(2) > /dev/null 2>&1; then echo "\033[0;32m✓\033[0m"; else echo "\033[0;31m✗\033[0m"; fi`
+endef
+
+help:
+	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
